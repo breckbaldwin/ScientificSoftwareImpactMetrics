@@ -22,7 +22,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Stan, a Bayesian modeling language, was released in 2012 to considerable fanfare. A shiny new inference algorithm, HMC with NUTS (@hoffman2014no), promised and delivered fits that could not be fit before. And then deep learning happened. The relese of TensorFlow (@abadi2016tensorflow) opened the doors of deep learning to everyone and in 2016 began garnering significant traction. One result of this was people often assumed that deep learning's successes usurped Bayesian modeling's domain. This was not in our imagination, NSF reviews came back dismissing Stan funding because all the interesting work was assumed to be happening with deep learning. Mind you, deep learning and Bayesian modeling are conceptual cousins but very different from each other and are better thought of as complementary than as antagonistic. Yet Bayesians found themselves in deep learning's shadow somehow. It is 2021 and this document does some very simple analysis around use of Bayesian and deep learning packages as evidenced in the research literature to get a perspective on what actually happened and is happening. The comparison aims to approach the following goals with very simple research citation metrics:
+Stan, a Bayesian modeling language, was released in 2012 to considerable fanfare. A shiny new inference algorithm, HMC with NUTS (@hoffman2014no), promised and delivered fits that could not be fit before. And then deep learning happened. The release of TensorFlow (@abadi2016tensorflow) opened the doors of deep learning to everyone and in 2016 began getting significant traction. One result of this was people often assumed that deep learning's successes usurped Bayesian modeling's domain. This was not in our imagination, NSF reviews came back dismissing Stan funding because all the interesting work was assumed to be happening with deep learning. Mind you, deep learning and Bayesian modeling are conceptual cousins but very different from each other and are better thought of as complementary than as antagonistic. Yet Bayesians found themselves in deep learning's shadow somehow. 
+
+It is 2021 and this document does some very simple analysis around use of Bayesian and deep learning packages as evidenced in the research literature to get a perspective on what actually happened and is happening. The comparison aims to approach the following goals with very simple research citation metrics:
 
 1. How does Bayesian modeling software stack up against deep learning? 
 2. Asses the impact of Bayesian modeling software using deep learning metrics as a yard stick--how big a fraction of a huge thing are we?
@@ -40,7 +42,7 @@ The key resource behind this document is Elsevier's https://scopus.com research 
 
 # High level prevalence of Deep Learning vs Bayesian Modeling
 
-In the process of grant writing I create metrics to help justify projects, lately in partnership with PyMC and ArviZ through the scientific fiscal sponsor NumFOCUS of which Stan is a member as well. Since Bayesian modeling seems always in the shadow of deep learning I started tracking those software packages as well for comparison. Below we see the relative citations of the top deep learning packages TensorFlow, PyTorch and the support package Keras to the Bayesian packages PyMC3, Stan with support/derivative packages RStan, RStanArm, PyStan and brms. 
+In the process of grant writing I create metrics to help justify projects, lately in partnership with PyMC and ArviZ through the scientific fiscal sponsor NumFOCUS of which Stan is a member as well. Since Bayesian modeling seems always in the shadow of deep learning I started tracking deep learning software packages as well for comparison. Below we see the relative citations of the top deep learning packages TensorFlow, PyTorch and the support package Keras to the Bayesian packages PyMC3, Stan with support/derivative packages RStan, RStanArm, PyStan and brms. 
 
 ```{r Access Scopus, include=FALSE}
 rm(list = rm()) #clean out any state from previous runs
@@ -203,9 +205,7 @@ plot2 <-
 print(plot2)
 ```
 
-Reading from top of Fig 1, assuming raw research citations counts matter, Bayesian packages are overwhelmed by deep learning packages with a count of nearly 35,000 citations to a Bayesian count of 4,500--nearly a 10x difference. One could excuse a bit of Bayesian despondency in the face of the wave depicted above--this is ratio mirrors my expectations. But graph also shows relative counts for research citations outside of computer science which drops the count of deep learning from 34,977 to 8,885--a 75% drop. That drop IS a surprise.  I didn't have a prior on deep learning's distribution across subject categories but I didn't expect it to be so skewed. The Bayesian ecosystem shows a total of 4,578 of which 14% are computer science--that drop does not surprise me. 
-
-An early take away is that Bayesian's shouldn't bother applying to computer science directorates since it's deep learning's home turf or Bayesians should double down on applying to computer science directorates since they must be getting sick of deep learning proposals.
+Reading from top of Fig 1, assuming raw research citations counts matter, Bayesian packages are overwhelmed by deep learning packages with a count of nearly 35,000 citations to a Bayesian count of 4,500--nearly a 10x difference. One could excuse a bit of Bayesian despondency in the face of the wave depicted above--this ratio supports my expectations. But graph also shows relative counts for research citations outside of computer science which drops the count of deep learning from 34,977 to 8,885--a 75% drop. That drop IS a surprise.  I didn't have a prior on deep learning's distribution across subject categories but I didn't expect it to be so skewed. The Bayesian ecosystem shows a total of 4,578 of which 14% are computer science--that drop does not surprise me. 
 
 # Subject Category Breakdowns
 
@@ -324,9 +324,9 @@ I leave the tea leaf interpretation to others but I'll make the observation that
 
 # Details of the queries
 
-Below are the queries used to identify the packages. Direct citation linking does not work well with these packages since many of them had no journal publication to cite in a referring article. As a result a string search was used to identify the citations in the reference section as determined by Scopus.com's indexing engine. I would estimate a 5% false positive rate based based on informal examination of return sets. 
+Below are the queries used to identify the packages. Direct citation linking does not work well with these packages since many of them had no journal publication to cite in a referring article. As a result a string search was used to identify the citations in the reference section which was determined by Scopus.com's document parser. I would estimate a 5% false positive rate based based on informal examination of return sets. 
 
-For an example of how the queries were developed, the stand alone query 'rstan' had the addition of rejecting articles that mentioned 'mit' because there was a common reference to 'http://wwwmath.mit.edu/~rstan/ec/' that existed prior to 2012 when Stan was released. The name 'Stan' presented obvious difficulties and the combination shown achieved desired count drop off at 2012 with reasonable precision and each of the 'OR' terms contributed to coverage significantly. How the word 'mc-stan.org' was tokenized is unknown but there were no results before 2013 for the solo query. 
+For an example of how the queries were developed, the stand alone query 'rstan' had the addition of rejecting articles that mentioned 'mit' because there was a common reference to 'http://wwwmath.mit.edu/~rstan/ec/' that existed prior to 2012 when Stan was released. The name 'Stan' presented obvious difficulties, see [https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/](https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/). The query shown achieved desired count drop off at 2012 with reasonable precision and each of the 'OR' terms contributed to coverage significantly. How the word 'mc-stan.org' was tokenized is unknown but there were no results before 2013 for the solo query. 
 
 ```{r Query Table, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 pkg_query_m_display <- pkg_query_m
@@ -338,6 +338,10 @@ kable(pkg_query_m_display, booktabs = TRUE) %>% kable_styling(font_size = 12)
 ```
 
 PyMC presented some challenges in that the string PyMC was referenced in early publications but also is ambiguous with chemical terms, so like Stan, author names were included to restrict search as was the case with 'brms'. These queries were initially developed to search entire documents rather than the current restriction to the references section of papers. I would expect the false positive rate to be even lower. 
+
+# Conclusions
+
+I am waiting on some feedback from the Stan community before making any observations. But I will say that this overall has me feeling quite optimistic about the future of Bayesian modeling. 
 
 # Access to source/scripts and acknowledgements
 
