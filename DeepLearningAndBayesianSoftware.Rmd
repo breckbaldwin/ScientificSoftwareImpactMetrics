@@ -345,7 +345,7 @@ Supporting technology for this document includes the R language (@Rcite), the 't
 
 I'd like to thank the Andrew Gelman's Laplace lab at Columbia University for support. 
 
-I intend this to be an evolving document with periodic updates at it's github repo at [https://github.com/breckbaldwin/bayesianImpactMetrics](https://github.com/breckbaldwin/bayesianImpactMetrics) where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as [https://breckbaldwin.github.io/bayesianImpactMetrics/DeepLearningAndBayesianSoftware.html](https://breckbaldwin.github.io/bayesianImpactMetrics/DeepLearningAndBayesianSoftware.html). All source code is viewable in the .Rmd document.
+I intend this to be an evolving document with periodic updates at it's github repo at [https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics](https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics) where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as [https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html](https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html). Note that github pages changes urls around in odd ways for the rendered view of hte html page. All source code is viewable in the .Rmd document.
 
 I can be reached at breckbaldwin@gmail.com or via the github issues on the repository. 
 
