@@ -32,7 +32,7 @@ It is 2021 and this document does some very simple analysis around use of Bayesi
 
 Citation counting is a crude metric but it has the advantage of simplicity. In compiling these metrics I came away with very different opinion than I started with so I thought it worth sharing. My prior assumptions were that Bayesian modeling was very niche and scurrying around doing very useful and important science but niche none the less. This analysis led me to revise that opinion considerably.
 
-For the purposes of this document we take Bayesian software to be Stan (@standev) and PyMC3 (@salvatier2016probabilistic) with ecosystem components included that are likely to be cited. That includes the simplified syntax interfaces to Stan, brms (@brms), RstanArm (@rstanarm), and interface packages to Stan, RStan (@rstan) and PyStan (@pystan)[^1]. The analysis applies only to packages that are in current development so the venerated, and very high impact, packages like BUGS (@lunn2013bugs) and JAGS (@plummer2003jags) are not considered although including them would double our counts. Also, the ecosystems are actually much larger but they are unlikely to be cited in the research literature and we have to stop some place. For deep learning we take TensorFlow, its interface Keras (@keras) and PyTorch (@pytorch) as roughly equivalent entities for the comparison. Theano (@theano) is no longer in development. It should be noted that both PyTorch and TensorFlow have implemented HMC with NUTS for Bayesian inference but those are recent developments that have not made much of an impact yet. 
+For the purposes of this document we take Bayesian software to be Stan (@standev) and PyMC3 (@salvatier2016probabilistic) with ecosystem components included that are likely to be cited. That includes the simplified syntax interfaces to Stan, brms (@brms), RstanArm (@rstanarm), and interface packages to Stan, RStan (@rstan) and PyStan (@pystan)[^1]. The analysis applies only to packages that are in current development so the venerated, and very high impact, packages like BUGS (@lunn2013bugs) and JAGS (@plummer2003jags) are not considered although including them would double our counts. There is also the best named Bayesian package of all time, "emcee: The MCMC Hammer", (@foreman2013emcee) which enjoys tremendous use in the astrophysics community but is too specialized to be considered a general Bayesian package so it is not included. Also, the ecosystems are actually much larger but they are unlikely to be cited in the research literature and we have to stop some place. For deep learning we take TensorFlow, its interface Keras (@keras) and PyTorch (@pytorch) as roughly equivalent entities for the comparison. Theano (@theano) is no longer in development. It should be noted that both PyTorch and TensorFlow have implemented HMC with NUTS for Bayesian inference but those are recent developments that have not made much of an impact yet. 
 
 [^1]:There are also lighter weight interfaces as well interface to other languages that I ignore due to low expected research mentions, see [https://https://mc-stan.org/users/interfaces/]([https://https://mc-stan.org/users/interfaces/) for a listing. 
 
@@ -97,6 +97,9 @@ if (USE_CACHE) {
       add_headers('X-ELS-APIKey' = API_KEY,
                   'X-ELS-Insttoken' = INSTITUTION_TOKEN)
     )
+    if (result$status_code != 200) { 
+      stop(sprintf("Got error from search, got status code %d",result$status_code))
+    }
     redis$SET(url, serialize(result, NULL))
     return(result)
   }
@@ -117,6 +120,9 @@ if (USE_CACHE) {
       add_headers('X-ELS-APIKey' = API_KEY,
                   'X-ELS-Insttoken' = INSTITUTION_TOKEN)
     )
+    if (result$status_code != 200) { 
+      stop(sprintf("Got error from search, got status code %d",result$status_code))
+    }
     return(result)
   }
 }
@@ -125,16 +131,19 @@ if (USE_CACHE) {
 
 stan_q <- '(gelman+AND+hoffman+AND+stan)+OR+mc-stan.org'
 pymc_q <- 'PyMC3+OR+(PyMC*+AND+fonnesbeck)'
-rstan_q <- '(rstan+AND+NOT+mit)'
-brms_q <-  '(brms+AND+burkner)'
+rstan_q <- 'rstan+AND+NOT+mit'
+brms_q <-  'brms+AND+burkner'
+emcee_q <- 'emcee+AND+foreman-mackey'
 
 #Display names followed by queries
-pkg_query <- c('Stan', 'brms','PyStan', 'RStanArm', 'RStan','PyMC',  'TensorFlow', 'PyTorch', 'Keras',
-               stan_q, brms_q, 'pystan', 'rstanarm', rstan_q, pymc_q, 'tensorflow', 'pytorch', 'Keras')
-pkg_query_m <- matrix(data = pkg_query, ncol =2)
+pkg_query <- c('emcee', 'Stan', 'brms','PyStan', 'RStanArm', 'RStan','PyMC',  'TensorFlow', 'PyTorch', 'Keras',
+               emcee_q, stan_q, brms_q, 'pystan', 'rstanarm', rstan_q, pymc_q, 'tensorflow', 'pytorch', 'Keras')
+pkg_query_m <- matrix(data = pkg_query[c(-1,-11)], ncol =2) #emcee removed
 queryBayVsDeepM <- matrix(ncol = 2, nrow = 2)
-queryBayVsDeepM[1,] <- c('Bayesian', paste(pkg_query_m[1:6,2], collapse = "+OR+"))
-queryBayVsDeepM[2,] <- c('Deep Learning', paste(pkg_query_m[7:9,2], collapse = "+OR+"))
+queryBayVsDeepM[1,] <- c('Bayesian', 
+                         paste0('(', paste(pkg_query_m[1:6,2], collapse = ")+OR+("),')'))
+queryBayVsDeepM[2,] <- c('Deep Learning', 
+                         paste0('(', paste(pkg_query_m[7:9,2], collapse = ")+OR+("), ')'))
 
 ```
 
@@ -147,15 +156,15 @@ df <- data.frame(years)
 
 years <- year_start:year_end
 scopus.df <- data.frame(years)
-for (i in 1:nrow(queryBayVsDeepM)) {
-  package_name = queryBayVsDeepM[i, 1]
-  query = queryBayVsDeepM[i, 2]
-  if (query == '') {
-    query = package_name
-  }
+#queryM = pkg_query_m
+queryM = queryBayVsDeepM
+for (i in 1:nrow(queryM)) {
+  package_name = queryM[i, 1]
+  query = queryM[i, 2]
   for (suffix in c('','_no_comp_sci')) {
+#  for (suffix in c('')) {
     year_counts = c()
-        for (year in year_start:year_end) {
+    for (year in year_start:year_end) {
       url <- paste(BASE_URL, '?query=','REF(', query,')',
                    "+AND+PUBYEAR+=+", year,
                    sep = '')
@@ -182,7 +191,7 @@ df_long <- gather(scopus.df, topic, yr_count,
                   column_names[2]:column_names[length(column_names)])
 
 df_long_label <- df_long %>%
-  mutate(label = if_else(years == max(years),
+  mutate(label = if_else(years ==  max(years),
                          paste(as.character(topic),col_sums[topic], sep = ':'), NA_character_))
 
 
@@ -202,6 +211,10 @@ plot2 <-
   caption = "Fig 1: Relative counts with and without computer science journals") +
    theme(plot.caption=element_text(size=12, hjust=0, margin=margin(15,0,0,0)))
 
+
+   log_plot = plot2 + 
+     scale_y_continuous(breaks=c(1, 10, 100, 1000, 10000, 100000, 1e+06, 1e+07, 1e+08), 
+                     trans = scales::log_trans())
 print(plot2)
 ```
 
@@ -248,9 +261,6 @@ getAllSubjectCategories <- function (queryM) {
   for (i in 1:nrow(queryM)) {
     package_name = queryM[i, 1]
     query = queryM[i, 2]
-    if (!is.na(str_match(query,"^\\(")) && !is.na(str_match(query,"\\)$"))) {
-      query = str_match(query, "^\\((.*)\\)$")[1,2] #remove extra brackets, breaks scopus
-    }
     accumDf[counter:((counter - 1) + length(years)),]$years <- years
     accumDf[counter:((counter - 1) + length(years)),]$package <- 
       rep(package_name, length(years))
@@ -268,10 +278,6 @@ getAllSubjectCategories <- function (queryM) {
           sep = ''
         )
       result <- get_results(url)
-      if (result$status_code != 200) {
-        print(sprintf("got non 200 status from query: %d", result$status_code))
-        stop()
-      }
       json_txt <- rawToChar(as.raw(strtoi(result$content, 16L)))
       data <- jsonlite::fromJSON(json_txt)
       article_count <-
