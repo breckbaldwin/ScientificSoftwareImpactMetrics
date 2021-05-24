@@ -218,7 +218,7 @@ plot2 <-
 print(plot2)
 ```
 
-Reading from top of Fig 1, assuming raw research citations counts matter, Bayesian packages are overwhelmed by deep learning packages with a count of nearly 35,000 citations to a Bayesian count of 4,500--nearly a 10x difference. One could excuse a bit of Bayesian despondency in the face of the wave depicted above--this ratio supports my expectations. But graph also shows relative counts for research citations outside of computer science which drops the count of deep learning from 34,977 to 8,885--a 75% drop. That drop IS a surprise.  I didn't have a prior on deep learning's distribution across subject categories but I didn't expect it to be so skewed. The Bayesian ecosystem shows a total of 4,578 of which 14% are computer science--that drop does not surprise me. 
+Reading from top of Fig 1, assuming raw research citations counts matter, Bayesian packages are overwhelmed by deep learning packages with a count of nearly 35,000 citations to a Bayesian count of 4,600--nearly a 10x difference. One could excuse a bit of Bayesian despondency in the face of the wave depicted above--this ratio supports my expectations. But graph also shows relative counts for research citations outside of computer science which drops the count of deep learning from 35k to 8.8k--a 75% drop. That drop IS a surprise.  I didn't have a prior on deep learning's distribution across subject categories but I didn't expect it to be so skewed. The Bayesian ecosystem shows a total of 4.5k of which 14% are computer science--that ratio does not surprise me. 
 
 # Subject Category Breakdowns
 
@@ -324,7 +324,7 @@ kable(allDataDf, booktabs = TRUE) %>% kable_styling(font_size = 10)
 
 Table 1 shows the basic subject split between Bayesian modeling and deep learning with total for the two categories, following are the individual package counts with a 'detail totals' as well for the individual packages. Note that the totals do not match because an article can match more than one package and as result gets contributes to the count of multiple packages. On average an article's journal is classified into two subject categories. 
 
-Staring with the subject that got us here we see that computer science has 728 Bayesian publications vs 29,301 deep learning publications for 98% of the share of 30,029 total. The left most two columns are the same queries used for the graph in Fig 1 with the total in column 3. Columns 4-12 are individual packages with percentage of the total in the 13th column.  Sticking with computer science, one sees that TensorFlow has 18,178 references with 51% of the count--note that the total counts are higher because an article can matched by more that one query, each package gets a query, so the article count is 3 if Keras, PyMC and TensorFlow queries match the references and it has a computer science subject classification. 
+Staring with the subject that got us here we see that computer science has 727 Bayesian publications vs 29,365 deep learning publications for 98% of the share of 30,092 total. The left most two columns are the same queries used for the graph in Fig 1 with the total in column 3. Columns 4-12 are individual packages with percentage of the total in the 13th column.  Sticking with computer science, one sees that TensorFlow has 18,178 references with 51% of the count--note that the total counts are higher because an article can matched by more that one query, each package gets a query, so the article count is 3 if Keras, PyMC and TensorFlow queries match the references and it has a computer science subject classification. 
 
 I leave the tea leaf interpretation to others but I'll make the observation that Bayesians are playing a pretty big game in a lot of areas of science and as someone interested in getting funding to Bayesian software this is a pretty strong argument that we are highly relevant. 
 
@@ -335,8 +335,8 @@ Below are the queries used to identify the packages. Direct citation linking doe
 For an example of how the queries were developed, the stand alone query 'rstan' had the addition of rejecting articles that mentioned 'mit' because there was a common reference to 'http://wwwmath.mit.edu/~rstan/ec/' that existed prior to 2012 when Stan was released. The name 'Stan' presented obvious difficulties, see [https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/](https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/). The query shown achieved desired count drop off at 2012 with reasonable precision and each of the 'OR' terms contributed to coverage significantly. How the word 'mc-stan.org' was tokenized is unknown but there were no results before 2013 for the solo query. 
 
 ```{r Query Table, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-pkg_query_m_display <- pkg_query_m
-pkg_query_m_display[,2] <- sprintf("REF(%s)", str_replace_all(pkg_query_m[,2], '\\+',' '))
+pkg_query_m_display <- rbind(pkg_query_m, queryBayVsDeepM)
+pkg_query_m_display[,2] <- sprintf("REF(%s)", str_replace_all(pkg_query_m_display[,2], '\\+',' '))
 
 
 kable(pkg_query_m_display, booktabs = TRUE) %>% kable_styling(font_size = 12)
@@ -344,6 +344,8 @@ kable(pkg_query_m_display, booktabs = TRUE) %>% kable_styling(font_size = 12)
 ```
 
 PyMC presented some challenges in that the string PyMC was referenced in early publications but also is ambiguous with chemical terms, so like Stan, author names were included to restrict search as was the case with 'brms'. These queries were initially developed to search entire documents rather than the current restriction to the references section of papers. I would expect the false positive rate to be even lower. 
+
+The above queries can be run with the advance search option at https://scopus.com and are generated from the API queries actually used. The change is replacing '+' with ' '. An account is required which is included for many education institutions. 
 
 # Conclusions
 
@@ -353,7 +355,9 @@ I am waiting on some feedback from the Stan community before making any observat
 
 Supporting technology for this document includes the R language (@Rcite), the 'tidyverse' group of packages (@tidyverse) that give data and visualization tools and this Rmarkdown document (@rmarkdown) rendered with 'bookdown' (@bookdown) developed using the Rstudio (@rstudio) IDE (Integrated Development Environment). Supporting package include 'kable-extra' (@kable-extra), a table formatter, the 'scales' (@scales) package for converting to percentages, 'ggrepel' (@ggrepel) for labeling line graphs with dynamically shifting labels, 'jsonlite' (@jsonlite) for JSON data parsing, 'httr' (@httr) for GET requests, 'stringr' (@stringr) for regular expression matching and 'redux' (@redux) for access to the Redis server (@redis) which I highly recomend using as a caching layer for this sort of project. 
 
-I'd like to thank the Andrew Gelman's Laplace lab at Columbia University for support. 
+I'd like to thank Andrew Gelman and the Laplace lab at Columbia University for support. 
+
+Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary.
 
 I intend this to be an evolving document with periodic updates at it's github repo at [https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics](https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics) where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as [https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html](https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html). Note that github pages changes urls around in odd ways for the rendered view of hte html page. All source code is viewable in the .Rmd document.
 
