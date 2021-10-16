@@ -1,0 +1,409 @@
+---
+title: "Deep Learning does not Replace Bayesian Modeling"
+subtitle: "Comparing research use via citation counting"
+author: "Breck Baldwin"
+email: "breckbaldwin@gmail.com"
+date: "8/20/2021"
+output:
+ bookdown::html_document2:
+   includes:
+     in_header: _html/ga.html 
+     
+bibliography: citations.bib
+csl: american-medical-association.csl
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	comment = NA
+)
+```
+
+# Introduction
+
+Stan, a Bayesian modeling language, was released in 2012 to considerable fanfare. A shiny new inference algorithm, HMC with NUTS (@hoffman2014no), promised and delivered fits that could not be fit before. And then deep learning happened. The release of TensorFlow (@abadi2016tensorflow) opened the doors of deep learning to all and by it 2016 began getting significant traction. One result of this was people often assumed that deep learning's successes usurped Bayesian modeling's domain. This is not in our collective imagination--Bayesians like to 'believe things' after all--NSF reviews came back dismissing Stan funding because all the interesting work was assumed to be happening with deep learning. Recently in the UK, open skepticism was expressed about impact claims for Bayesian software in response to a research grant. Mind you, deep learning and Bayesian modeling are conceptual cousins but in the end are very different from each other. They are better thought of as complementary than as antagonistic. Yet Bayesians found themselves in deep learning's shadow somehow. 
+
+It is 2021 and this document does some very simple analysis around use of Bayesian and deep learning packages as evidenced in the research literature to get a perspective on what actually happened and is happening. The comparison aims to approach the following goals with very simple research citation metrics:
+
+1. How does Bayesian modeling software stack up against deep learning without appeal to feature comparisons, performance arguments on suspect data sets or achieved closeness to Platonic ideals? My response is--just go out and count how many citations the respective approaches have in the research literature. Counting and categorization, that's it. 
+2. Asses the impact of Bayesian modeling software using deep learning metrics as a yard stick--how big a fraction of a huge thing are we?
+3. Contextualize the roles each approach has by looking at subject distributions. The technologies have very different use cases so one would expect variation.
+
+Citation counting is a crude metric but it has the advantage of simplicity. In compiling these metrics I came away with very different opinion than I started with so I thought it worth sharing. My prior assumptions were that Bayesian modeling was very niche and scurrying around doing very useful and important science but niche none the less. This analysis led me to revise that opinion considerably. 
+
+R4: 
+## Characterizing the difference between Stan/PyMC3 and TensorFlow/PyTorch
+
+What, if anything, are the hard differences between Bayesian modeling and deep learning? Deep learning can be implemented in Bayesian modeling, and lots of Bayesian concepts get used in the deep learning world as one reviewer noted:
+
+"There is a *huge* rise in the use of Bayesian Deep learning. Please do not fall into the trap of making DL look like some ‘other’ thing. It’s just a non/hyper-parametric model and as such we can do all the full Bayesian stuff - and many do! There are well-documented works on semi-structured HMC, Riemann MC and good old fashioned MCMC for use in big deep nets, let alone all the neat work on approximate Bayes, mainly using variational learning. Look at work on things like loss-calibrated Bayesian deep nets, Bayes DL, Bayesian autoencoding, ‘HamilTorch’ MCMC package for TensorFlow (https://adamcobb.github.io/journal/hamiltorch.html) etc." 
+
+Perhaps Stan and PyMC3 are really part of the same discipline as deep learning and this article catalogs usage differences of siblings from the same parents--sort of like the difference between R and Python? 
+
+But no. Another reviewer comment contains the key insight: they said it was no surprise that Bayesian software had high usage outside of computer science since other subjects are "dominated by Stats & Applied Math". I took this to mean that deep learning is not a natural candidate for use in those fields, and software like Stan and PyMC3 are. Unpacking that a bit I'll observe:
+
+* Unless the phenomenon under study is a physical neural net, deep learning only offers prediction services. While outstanding progress has been made and further progress may well involve Bayesian concepts, it is only prediction in the end. 
+* The basis of prediction in deep learning is opaque to human comprehension even if Bayesian techniques are used. This applies to generative neural nets as well. 
+* Opacity blocks use in fields "dominated by Stats & Applied Math" where the goal involves developing and fitting mechanistic models. The science is in the model description, quality of fit validates the model. A high quality fit in the absence of an understandable model does not help. 
+
+Deep learning clearly is used in mechanistic models but typically as a sensor or classifier, e.g., classify x-ray images for evidence of COVID pneumonia in an epidemialogical study. That study itself will likely be a state-based model where transition rates are explicitly estimated statistically and are human interpretable. 
+
+Another case are hybrid models where a deep learning component replaces some or all of the likelihood of a Bayesian model. While the overall model may be interpretable, the individual deep learning components remain black boxes. Interpretability comes from have well understood properties from how they were trained etc. For example Maggie Lieu's presentation at StanCon that used a deep learning component to substitute for a numerically unstable galaxy mass estimator().
+
+Also Bayesian models can be utterly opaque if not authored with an eye to understandability, but the option for understandability exists and is generally the expectation. Deep learning systems cannot match this because a big portion of 'authoring' (hyper parameter setting) in those frameworks are beyond human understanding.
+
+In the game of "one of these things is not like the other", human interpretable models distinguishes Stan and PyMC3 from PyTorch and TensorFlow in quite absolute terms[^3]. 
+
+If I am correct that deep learning and Bayesian modeling are so different when it comes to interpretablity then the mingling of the fields baffles the mind. They share similar programming techniques, have similar research leading edges and ... . 
+I think Stan got a hold of the AI tail which whipped it out of booring stats into ML. 
+
+[^3]:However, in a year this article may be much more difficult to write since both projects have adopted HMC implementations but I'd suggest that is more of a grafting of another approach to their code base rather than natural growth of deep learning techniques into the PyMC3/Stan space. 
+
+
+
+:R4
+
+## Defining what counts as a citation
+
+For the purposes of this document we take Bayesian software to be Stan (@standev) and PyMC3 (@salvatier2016probabilistic) with ecosystem components included that are likely to be cited. That includes the simplified syntax interfaces to Stan, brms (@brms), RstanArm (@rstanarm), and interface packages to Stan, RStan (@rstan) and PyStan (@pystan)[^1]. The analysis applies only to packages that are in current development so the venerated, and very high impact, packages like BUGS (@lunn2013bugs) and JAGS (@plummer2003jags) are not considered although including them would double our counts. There is also the best named Bayesian package of all time, "emcee: The MCMC Hammer", (@foreman2013emcee) which enjoys tremendous use in the astrophysics community but is too specialized to be considered a general Bayesian package so it is not included. Also, the ecosystems are actually much larger but they are unlikely to be cited in the research literature and we have to stop some place. For deep learning we take TensorFlow, its interface Keras (@keras) and PyTorch (@pytorch) as roughly equivalent entities for the comparison. Theano (@theano) is no longer in development. It should be noted that both PyTorch and TensorFlow have implemented HMC with NUTS for Bayesian inference but those are recent developments that have not made much of an impact yet. 
+
+
+[^1]:There are also lighter weight interfaces as well interface to other languages that I ignore due to low expected research mentions, see https://https://mc-stan.org/users/interfaces/ for a listing. 
+
+The key resource behind this document is Elsevier's https://scopus.com research search engine that provides a tightly curated[^2] search index that includes sources outside of the academic behemoth's own journals. It also provides a solid API (Application Programmer Interface) and a classification of journals into subject areas. The actual form of Scopus queries is discussed below which should allow the questioning reader to verify and update the counts for the various packages discussed. 
+
+[^2]:https://scolar.google.com genrally yields double the counts for similar queries but no subject classification or API to code against. The increased counts are likely due to inclusion of non-peer reviewed sites like https://arxiv.org
+
+<br>
+
+# High level prevalence of Deep Learning vs Bayesian Modeling
+
+In the process of grant writing I create metrics to help justify projects, lately in partnership with PyMC and ArviZ through the scientific fiscal sponsor NumFOCUS of which Stan is a member as well. Since Bayesian modeling seems always in the shadow of deep learning I started tracking deep learning software packages as well for comparison. Below we see the relative citations of the top deep learning packages TensorFlow, PyTorch and the support package Keras to the Bayesian packages PyMC3, Stan with support/derivative packages RStan, RStanArm, PyStan and brms. 
+
+```{r Access Scopus, include=FALSE}
+rm(list = rm()) #clean out any state from previous runs
+library(tidyverse)
+library(jsonlite)
+library(httr)
+library(kableExtra)
+library(stringr)
+
+# remember to set working directory to the location of this file
+setwd("~/git/ScientificSoftwareImpactMetrics")
+credentials <- read_json('Scopus_credentials.json')
+API_KEY <- credentials$API_KEY
+INSTITUTION_TOKEN <- credentials$INSTITUTION_TOKEN
+# Format of Scopus_credentials.json
+# {
+# "API_KEY":"XXXXXXXXXXXXXXXXXXXXXXXXXxx",
+# "INSTITUTION_TOKEN":"XXXXXXXXXXXXXXXXXXXXXXXX"
+# }
+
+BASE_URL = 'https://api.elsevier.com/content/search/scopus'
+
+USE_CACHE = TRUE #will have to setup a redis server, strongly recommend doing this
+REPORT_PROGRESS = FALSE
+
+if (USE_CACHE) {
+  library(redux)
+  redis <- redux::hiredis()
+  get_results <- function(url) {
+    cache <- redis$GET(url) # check redis first
+    if (!is.null(cache)) {
+      result <- unserialize(cache)
+      if (result$status_code == 200) {
+        if (REPORT_PROGRESS) {
+          cat(paste("\nhitting redis for", url))
+        }
+        return(result)
+      }
+    }
+    random_wait <- abs(rnorm(1, 1, 1))
+    if (REPORT_PROGRESS) {
+      cat(paste("\ncache miss, querying:", url, "\n"))
+      cat(paste(
+        "\nWaiting",
+        random_wait,
+        "seconds to be nice to webserver\n"
+      ))
+    }
+    Sys.sleep(random_wait)
+    result <- GET(
+      url,
+      add_headers('X-ELS-APIKey' = API_KEY,
+                  'X-ELS-Insttoken' = INSTITUTION_TOKEN)
+    )
+    if (result$status_code != 200) { 
+      stop(sprintf("Got error from search, got status code %d",result$status_code))
+    }
+    redis$SET(url, serialize(result, NULL))
+    return(result)
+  }
+} else { #not using cache, hacky but works with R
+  get_results <- function(url) {
+    random_wait <- abs(rnorm(1, 1, 1))
+    if (REPORT_PROGRESS) {
+      cat(paste("\nno cache used, querying:", url, "\n"))
+      cat(paste(
+        "\nWaiting",
+        random_wait,
+        "seconds to be nice to webserver\n"
+      ))
+    }
+    Sys.sleep(random_wait)
+    result <- GET(
+      url,
+      add_headers('X-ELS-APIKey' = API_KEY,
+                  'X-ELS-Insttoken' = INSTITUTION_TOKEN)
+    )
+    if (result$status_code != 200) { 
+      stop(sprintf("Got error from search, got status code %d",result$status_code))
+    }
+    return(result)
+  }
+}
+
+# setup queries for analysis
+
+stan_q <- '(gelman+AND+hoffman+AND+stan)+OR+mc-stan.org'
+pymc_q <- 'PyMC3+OR+(PyMC*+AND+fonnesbeck)'
+rstan_q <- 'rstan+AND+NOT+mit'
+brms_q <-  'brms+AND+burkner'
+emcee_q <- 'emcee+AND+foreman-mackey'
+
+#Display names followed by queries
+pkg_query <- c('emcee', 'Stan', 'brms','PyStan', 'RStanArm', 'RStan','PyMC',  'TensorFlow', 'PyTorch', 'Keras',
+               emcee_q, stan_q, brms_q, 'pystan', 'rstanarm', rstan_q, pymc_q, 'tensorflow', 'pytorch', 'Keras')
+pkg_query_m <- matrix(data = pkg_query[c(-1,-11)], ncol =2) #emcee removed
+queryBayVsDeepM <- matrix(ncol = 2, nrow = 2)
+queryBayVsDeepM[1,] <- c('Bayesian', 
+                         paste0('(', paste(pkg_query_m[1:6,2], collapse = ")+OR+("),')'))
+queryBayVsDeepM[2,] <- c('Deep Learning', 
+                         paste0('(', paste(pkg_query_m[7:9,2], collapse = ")+OR+("), ')'))
+
+```
+
+```{r DL vs Bayes Graph, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggrepel)
+year_start <- 2012
+year_end <- 2020
+years <- year_start:year_end
+df <- data.frame(years)
+
+years <- year_start:year_end
+scopus.df <- data.frame(years)
+#queryM = pkg_query_m
+queryM = queryBayVsDeepM
+for (i in 1:nrow(queryM)) {
+  package_name = queryM[i, 1]
+  query = queryM[i, 2]
+  for (suffix in c('','_no_comp_sci')) {
+#  for (suffix in c('')) {
+    year_counts = c()
+    for (year in year_start:year_end) {
+      url <- paste(BASE_URL, '?query=','REF(', query,')',
+                   "+AND+PUBYEAR+=+", year,
+                   sep = '')
+      if (suffix == '_no_comp_sci') {
+        url = paste(url, '+AND+NOT+SUBJAREA(COMP)', sep = '')
+      }
+      result <- get_results(url)
+      json_txt <- rawToChar(as.raw(strtoi(result$content, 16L)))
+      data <- jsonlite::fromJSON(json_txt)
+      year_counts = c(
+        year_counts,
+        as.numeric(data$`search-results`$`opensearch:totalResults`))
+    }
+    scopus.df[paste(
+      package_name,
+      suffix,
+      sep = '')] <- year_counts
+  }
+}
+
+column_names <- colnames(scopus.df)
+col_sums <- colSums(scopus.df)
+df_long <- gather(scopus.df, topic, yr_count,
+                  column_names[2]:column_names[length(column_names)])
+
+df_long_label <- df_long %>%
+  mutate(label = if_else(years ==  max(years),
+                         paste(as.character(topic),col_sums[topic], sep = ':'), NA_character_))
+
+
+plot2 <-
+  ggplot(data = df_long_label, aes(
+    x = years,
+    y = yr_count,
+    group = topic,
+    color = topic
+  )) +
+  geom_line() +
+  geom_point() +
+  geom_label_repel(aes(label = label),
+                   na.rm = TRUE) +
+  scale_color_discrete(guide = FALSE) +
+  labs(y = "year count for research articles matching topic",
+  caption = "Fig 1: Relative counts with and without computer science journals") +
+   theme(plot.caption=element_text(size=12, hjust=0, margin=margin(15,0,0,0)))
+
+
+   log_plot = plot2 + 
+     scale_y_continuous(breaks=c(1, 10, 100, 1000, 10000, 100000, 1e+06, 1e+07, 1e+08), 
+                     trans = scales::log_trans())
+print(plot2)
+```
+
+Reading from top of Fig 1, assuming raw research citations counts matter, Bayesian packages are overwhelmed by deep learning packages with a count of nearly 35,000 citations to a Bayesian count of 4,600--nearly a 10x difference. One could excuse a bit of Bayesian despondency in the face of the wave depicted above--this ratio supports my expectations. But graph also shows relative counts for research citations outside of computer science which drops the count of deep learning from 35k to 8.8k--a 75% drop. That drop IS a surprise.  I didn't have a prior on deep learning's distribution across subject categories but I didn't expect it to be so skewed. The Bayesian ecosystem shows a total of 4.5k of which 14% are computer science--that ratio does not surprise me. 
+
+# Subject Category Breakdowns
+
+So what is going on here? The next question is what does the the distribution look like for non-computer science subject areas?  Below is a table of subject counts for packages starting in 2006 when PyMC was first released to 2021 with relative percentages listed:
+
+```{r Table 1, echo=FALSE, message=FALSE, warning=FALSE}
+library(scales)
+library(kableExtra)
+
+makeDisplayTable <- function(df) {
+  subjCats = colnames(df)[-1:-2]
+  df %>% group_by(package) %>% 
+    summarize_each(funs(sum), all_of(subjCats)) -> outDf
+  finalDf = t(outDf)
+  subFrame = finalDf[-1,]
+  cleanDf =  as.data.frame(apply(subFrame, 2, as.numeric))
+  colnames(cleanDf) = finalDf[1,]
+  rownames(cleanDf) = rownames(finalDf)[-1]
+  cleanDf %>% mutate(totals = rowSums(.)) -> summedDf
+  displayDf = summedDf
+  displayDf[] = NA_character_
+  for (i in 1:nrow(summedDf)) {
+    displayDf[i,] = as.list(sprintf("%d/%s", as.numeric(summedDf[i,]), 
+                                    label_percent(accuracy = 1)(as.numeric(summedDf[i,]/summedDf[i,]$totals))))
+    displayDf[i,]$totals = summedDf[i,]$totals 
+  }
+  displayOrderedDf <- displayDf[order(row.names(displayDf)),] 
+  return(displayOrderedDf)
+}
+
+getAllSubjectCategories <- function (queryM) {
+  year_start = 2006
+  year_end = 2021
+  years <- year_start:year_end
+  accumDf = data.frame(matrix(ncol = 2, nrow = nrow(queryM) * length(years)))
+  colnames(accumDf) = c('package', 'years')
+  counter = 1
+  article_count = 0
+  article_subj_count = 0
+  for (i in 1:nrow(queryM)) {
+    package_name = queryM[i, 1]
+    query = queryM[i, 2]
+    accumDf[counter:((counter - 1) + length(years)),]$years <- years
+    accumDf[counter:((counter - 1) + length(years)),]$package <- 
+      rep(package_name, length(years))
+    for (year in year_start:year_end) {
+      url <-
+        paste(
+          BASE_URL,
+          '?query=',
+          'REF(',
+          query,
+          ')',
+          "+AND+PUBYEAR+=+",
+          year,
+          '&facets=subjarea(count=101)',
+          sep = ''
+        )
+      result <- get_results(url)
+      json_txt <- rawToChar(as.raw(strtoi(result$content, 16L)))
+      data <- jsonlite::fromJSON(json_txt)
+      article_count <-
+        as.numeric(data$`search-results`$`opensearch:totalResults`) + article_count
+      facet_count <- length(data$`search-results`$facet$category$name)
+      j <- 1
+      while (j < facet_count) {
+        name <- data$`search-results`$facet$category$label[j]
+        name <- str_replace(name, " \\(all\\)", "")
+        hitCount <- as.numeric(data$`search-results`$facet$category$hitCount[j])
+        article_subj_count <- hitCount + article_subj_count
+        if (!name %in% colnames(accumDf)) {
+          accumDf[name] <- rep(0, length(years) * nrow(queryM))
+          #print(paste("name=",name,", count=",hitCount))
+        }
+        accumDf[counter,][[name]] <- hitCount
+        j <- j+ 1
+      }
+      counter = counter + 1
+    }
+  }
+  if (REPORT_PROGRESS) {
+    print(sprintf("%d paperXsubject with %d total papers for %.3f avg subjects per paper",
+                  article_subj_count,
+                  article_count,
+                  article_subj_count/article_count))
+  }
+  return(accumDf)
+}
+
+bayesVdeepLearnDf <- getAllSubjectCategories(queryBayVsDeepM)
+displayBayesVdeepLearnDf <- makeDisplayTable(bayesVdeepLearnDf)
+
+detailDf  <- getAllSubjectCategories(pkg_query_m)
+displayDetailDf <- makeDisplayTable(detailDf)
+
+allDataDf <- cbind(displayBayesVdeepLearnDf,displayDetailDf)
+allDataDf <- allDataDf[,c(1,2,3,11,6,7,10,9,4,8,5,12,13)]
+displayedColNames <- colnames(allDataDf)
+colnames(allDataDf) <- c(displayedColNames[1:12],'detail totals')
+kable(allDataDf, booktabs = TRUE) %>% kable_styling(font_size = 10)
+
+```
+
+Table 1 shows the basic subject split between Bayesian modeling and deep learning with total for the two categories, following are the individual package counts with a 'detail totals' as well for the individual packages. Note that the totals do not match because an article can match more than one package and as result gets contributes to the count of multiple packages. On average an article's journal is classified into two subject categories. 
+
+Staring with the subject that got us here we see that computer science has 727 Bayesian publications vs 29,365 deep learning publications for 98% of the share of 30,092 total. The left most two columns are the same queries used for the graph in Fig 1 with the total in column 3. Columns 4-12 are individual packages with percentage of the total in the 13th column.  Sticking with computer science, one sees that TensorFlow has 18,178 references with 51% of the count--note that the total counts are higher because an article can matched by more that one query, each package gets a query, so the article count is 3 if Keras, PyMC and TensorFlow queries match the references and it has a computer science subject classification. 
+
+I leave the tea leaf interpretation to others but I'll make the observation that Bayesians are playing a pretty big game in a lot of areas of science and as someone interested in getting funding to Bayesian software this is a pretty strong argument that we are highly relevant. 
+
+# Details of the queries
+
+Below are the queries used to identify the packages. Direct citation linking does not work well with these packages since many of them had no journal publication to cite in a referring article. As a result a string search was used to identify the citations in the reference section which was determined by Scopus.com's document parser. I would estimate a 5% false positive rate based based on informal examination of return sets. 
+
+For an example of how the queries were developed, the stand alone query 'rstan' had the addition of rejecting articles that mentioned 'mit' because there was a common reference to 'http://wwwmath.mit.edu/~rstan/ec/' that existed prior to 2012 when Stan was released. The name 'Stan' presented obvious difficulties, see https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/. The query shown achieved desired count drop off at 2012 with reasonable precision and each of the 'OR' terms contributed to coverage significantly. How the word 'mc-stan.org' was tokenized is unknown but there were no results before 2013 for the solo query. 
+
+```{r Query Table, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+pkg_query_m_display <- rbind(pkg_query_m, queryBayVsDeepM)
+pkg_query_m_display[,2] <- sprintf("REF(%s)", str_replace_all(pkg_query_m_display[,2], '\\+',' '))
+
+
+kable(pkg_query_m_display, booktabs = TRUE) %>% kable_styling(font_size = 12)
+
+```
+
+PyMC presented some challenges in that the string PyMC was referenced in early publications but also is ambiguous with chemical terms, so like Stan, author names were included to restrict search as was the case with 'brms'. These queries were initially developed to search entire documents rather than the current restriction to the references section of papers. I would expect the false positive rate to be even lower. 
+
+The above queries can be run with the advance search option at https://scopus.com and are generated from the API queries actually used where '+' was replaced with ' ' above. An account is required which is included for many education institutions. 
+
+# Conclusions
+
+As often happens conducting a closer look reveals subtleties. Deep learning dominates the computer science part of science and obviously it dominates in the commercial sector which this article does not address. However the remaining parts of science show a more balanced distribution across the approaches. This makes sense since the approaches are very different and serve different goals. 
+
+R1: This paper also demonstrates that deep learning is not neccessarily the default tool when it is time for some reasoning in the scientific enterprise. If you are doing immunology/microbiology then Bayesian methods dominate. Environmental science, economics are a coin flip. Researchers use what is fashionable perhaps as a default--it may ease publication, be more familiar to students/postdocs but at the potential cost of being a bad fit for the problem at hand. If Bayesian methods are good enough for immunologists then perhaps other fields should have a look.:R1
+
+As a Bayesian advocate I'd like to leave the funding agencies with the observation that Bayesian software carries roughly one third of the research load by research citation count (3925/(3925+8884)) without the backing of Fortune 500 companies like Facebook and Google. Just recently I learned of a funding denial because the funders didn't believe that Bayesian software could have the impact that was being claimed--that opinion could well be self fulfilling in the future but as of now it is not justified. 
+
+# Access to source/scripts and acknowledgements
+
+Supporting technology for this document includes the R language (@Rcite), the 'tidyverse' group of packages (@tidyverse) that give data and visualization tools and this Rmarkdown document (@rmarkdown) rendered with 'bookdown' (@bookdown) developed using the Rstudio (@rstudio) IDE (Integrated Development Environment). Supporting package include 'kable-extra' (@kable-extra), a table formatter, the 'scales' (@scales) package for converting to percentages, 'ggrepel' (@ggrepel) for labeling line graphs with dynamically shifting labels, 'jsonlite' (@jsonlite) for JSON data parsing, 'httr' (@httr) for GET requests, 'stringr' (@stringr) for regular expression matching and 'redux' (@redux) for access to the Redis server (@redis) which I highly recomend using as a caching layer for this sort of project. 
+
+I'd like to thank Andrew Gelman and the Laplace lab at Columbia University for support. 
+
+Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary.
+
+I intend this to be an evolving document with periodic updates at it's github repo at https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html. Note that github pages changes urls around in odd ways for the rendered view of hte html page. All source code is viewable in the .Rmd document.
+
+I can be reached at breckbaldwin@gmail.com or via the github issues on the repository. 
+
+# References
