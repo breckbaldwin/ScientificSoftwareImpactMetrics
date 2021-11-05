@@ -3,7 +3,7 @@ title: "Deep Learning does not Replace Bayesian Modeling"
 subtitle: "Comparing research use via citation counting"
 author: "Breck Baldwin"
 email: "breckbaldwin@gmail.com"
-date: "8/20/2021"
+date: "11/01/2021"
 output:
  bookdown::html_document2:
    includes:
@@ -22,27 +22,67 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!--**Abstract revised: Note this is not in the paper but a separate attachment** 
+
+One could be excused for assuming that deep learning had or will soon usurp all credible work in reasoning, artificial intelligence and statistics, but like most 'meme' class broad generalizations the concept does not hold up to scrutiny. Memes don't generally matter since the experts will always know better but in the case of Bayesian software like Stan and PyMC3 even its developers and advocates bemoan the apparent dominance of deep learning as manifested in popular culture, breathtaking performance and most problematically from funding agency peer review that impacts our ability to further advance the field. The facts however do not support the assumed dominance of deep learning in science upon closer examination.
+
+This letter simply makes the argument by the crudest of possible metrics, citation count, that once the discipline of Computer Science is subtracted, Bayesian software accounts for nearly a third of research citations. Stan and PyMC3 dominate some fields, PyTorch, Keras and TensorFlow dominate others with lots of variation in between. Bayesian and deep learning approaches are related but very different technologies in goals, implementation and applicability with little actual overlap so this is not a surprise, e.g., deep learning cannot bring the explainability of applied math/statistics and Bayesian methods do not scale to deep learning data sets.
+
+While deep learning behemoths like Facebook and Google both use and support Bayesian efforts, the Bayesian packages scientists actually use are academic/volunteer efforts punching far above their weight class and they need financial support. It would behoove funders to fully understand the impact and role of Bayesian methods in resource allocation.
+-->
+
 # Introduction
 
-Stan, a Bayesian modeling language, was released in 2012 to considerable fanfare. A shiny new inference algorithm, HMC with NUTS (@hoffman2014no), promised and delivered fits that could not be fit before. And then deep learning happened. The release of TensorFlow (@abadi2016tensorflow) opened the doors of deep learning to all and by it 2016 began getting significant traction. One result of this was people often assumed that deep learning's successes usurped Bayesian modeling's domain. This is not in our collective imagination--Bayesians like to 'believe things' after all--NSF reviews came back dismissing Stan funding because all the interesting work was assumed to be happening with deep learning. Recently in the UK, open skepticism was expressed about impact claims for Bayesian software in response to a research grant. Mind you, deep learning and Bayesian modeling are conceptual cousins but in the end are very different from each other. They are better thought of as complementary than as antagonistic. Yet Bayesians found themselves in deep learning's shadow somehow. 
+Stan, a Bayesian modeling language, was released in 2012 to considerable fanfare. A shiny new inference algorithm, HMC with NUTS (@hoffman2014no), promised and delivered fits that could not be fit before. And then deep learning happened. The release of TensorFlow (@abadi2016tensorflow) opened the doors of deep learning to all and by it 2016 began getting significant traction. One result of this was people often assumed that deep learning's successes usurped Bayesian modeling's domain. This is not in our collective imagination--Bayesians like to 'believe things' after all--NSF reviews came back dismissing Stan funding because all the interesting work was assumed to be happening with deep learning. Recently in the UK, open skepticism was expressed about impact claims for Bayesian software in response to a research grant[^0]. Mind you, deep learning and Bayesian modeling are conceptual cousins but in the end are very different from each other. They are better thought of as complementary than as antagonistic. Yet Bayesians found themselves in deep learning's shadow somehow. 
+
+[^0]: <!--R0: -->I will avoid substantiating the rejection of grants due to the dominance of deep learning with the names of my sources. I am not comfortable revealing private conversations that are perhaps best kept in confidence. In my own grant writing efforts I have not seen such comments but I have defensively addressed the deep learning issues due to what had been communicated to me. <!--:R0--> 
 
 It is 2021 and this document does some very simple analysis around use of Bayesian and deep learning packages as evidenced in the research literature to get a perspective on what actually happened and is happening. The comparison aims to approach the following goals with very simple research citation metrics:
 
-1. How does Bayesian modeling software stack up against deep learning without appeal to feature comparisons, performance arguments on suspect data sets or achieved closeness to Platonic ideals? Just go out and count how many citations the respective approaches have in the research literature. Counting and categorization, that's it. 
+1. How does Bayesian modeling software stack up against deep learning without appeal to feature comparisons, performance arguments on suspect data sets or achieved closeness to Platonic ideals? My response is--just go out and count how many citations the respective approaches have in the research literature. Counting and categorization, that's it. 
 2. Asses the impact of Bayesian modeling software using deep learning metrics as a yard stick--how big a fraction of a huge thing are we?
 3. Contextualize the roles each approach has by looking at subject distributions. The technologies have very different use cases so one would expect variation.
 
-Citation counting is a crude metric but it has the advantage of simplicity. In compiling these metrics I came away with very different opinion than I started with so I thought it worth sharing. My prior assumptions were that Bayesian modeling was very niche and scurrying around doing very useful and important science but niche none the less. This analysis led me to revise that opinion considerably.
+Citation counting is a crude metric but it has the advantage of simplicity. In compiling these metrics I came away with very different opinion than I started with so I thought it worth sharing. My prior assumptions were that Bayesian modeling was very niche and scurrying around doing very useful and important science but niche none the less. This analysis led me to revise that opinion considerably. 
+
+<!--R4:-->
+
+## One of these things is not like the other: Characterizing the difference between Bayesian modeling and deep learning
+
+What, if anything, are the hard differences between Bayesian modeling and deep learning? Deep learning can be implemented in Bayesian models, and lots of Bayesian concepts get used in the deep learning world as one reviewer noted:
+
+"There is a *huge* rise in the use of Bayesian Deep learning. Please do not fall into the trap of making DL look like some ‘other’ thing. It’s just a non/hyper-parametric model and as such we can do all the full Bayesian stuff - and many do! There are well-documented works on semi-structured HMC, Riemann MC and good old fashioned MCMC for use in big deep nets, let alone all the neat work on approximate Bayes, mainly using variational learning. Look at work on things like loss-calibrated Bayesian deep nets, Bayes DL, Bayesian autoencoding, ‘HamilTorch’ MCMC package for TensorFlow (https://adamcobb.github.io/journal/hamiltorch.html) etc." 
+
+Perhaps Stan and PyMC3 are really part of the same discipline as deep learning and this article catalogs usage differences of siblings from the same parents--sort of like the difference between R and Python? 
+
+But no. Another reviewer comment contains the key insight: they said it was no surprise that Bayesian software had high usage outside of computer science since other subjects are "dominated by Stats & Applied Math". I took this to mean that deep learning is not a natural candidate for use in those fields, and software like Stan and PyMC3 are. Unpacking that a bit I'll observe:
+
+* Unless the phenomenon under study is a physical neural net, deep learning only offers prediction services. While outstanding progress has been made and further progress may well involve Bayesian concepts, it is prediction in the end. 
+* The basis of prediction in deep learning is opaque to human comprehension even if Bayesian techniques are used. This applies to generative neural nets as well. 
+* Opacity blocks use in fields "dominated by Stats & Applied Math" where the goal involves developing and fitting mechanistic models for the most part. The science is in the model description, the quality of fit validates the model. A high quality fit in the absence of an understandable model does not help. 
+
+Deep learning clearly is used in mechanistic models but typically as a sensor or classifier, e.g., classify x-ray images for evidence of COVID pneumonia in an epidemiological study. That study itself will likely be a state-based model where transition rates are explicitly estimated statistically and are human interpretable. 
+
+Another case are hybrid models where a deep learning component replaces some or all of the likelihood of a Bayesian model. While the overall model may be interpretable, the individual deep learning components remain black boxes. Interpretability for the overall model comes from have well understood properties of the deep learning components, e.g., how they were trained etc. For example Maggie Lieu's presentation at StanCon that used a deep learning component to substitute for a numerically unstable halo mass function (@lieuAstro).
+
+Also Bayesian models can be utterly opaque if not authored with an eye to understandability, but the option for understandability exists and is generally the expectation. Deep learning systems cannot match this because a big portion of 'authoring' (hyper parameter setting) in those frameworks are beyond human understanding.
+
+In the end I believe model interpretability cleanly differentiates the the deep learners and Bayesian modelers[^3], at least in practice. 
+
+[^3]:However, in a year this article may be much more difficult to write since deep learning packages have adopted HMC implementations. But I'd suggest that is more of a grafting of another approach to their code base rather than natural growth of deep learning techniques into the PyMC3/Stan space. 
+
+<!--:R4-->
+
+## Defining what counts as a citation
 
 For the purposes of this document we take Bayesian software to be Stan (@standev) and PyMC3 (@salvatier2016probabilistic) with ecosystem components included that are likely to be cited. That includes the simplified syntax interfaces to Stan, brms (@brms), RstanArm (@rstanarm), and interface packages to Stan, RStan (@rstan) and PyStan (@pystan)[^1]. The analysis applies only to packages that are in current development so the venerated, and very high impact, packages like BUGS (@lunn2013bugs) and JAGS (@plummer2003jags) are not considered although including them would double our counts. There is also the best named Bayesian package of all time, "emcee: The MCMC Hammer", (@foreman2013emcee) which enjoys tremendous use in the astrophysics community but is too specialized to be considered a general Bayesian package so it is not included. Also, the ecosystems are actually much larger but they are unlikely to be cited in the research literature and we have to stop some place. For deep learning we take TensorFlow, its interface Keras (@keras) and PyTorch (@pytorch) as roughly equivalent entities for the comparison. Theano (@theano) is no longer in development. It should be noted that both PyTorch and TensorFlow have implemented HMC with NUTS for Bayesian inference but those are recent developments that have not made much of an impact yet. 
+
 
 [^1]:There are also lighter weight interfaces as well interface to other languages that I ignore due to low expected research mentions, see https://https://mc-stan.org/users/interfaces/ for a listing. 
 
 The key resource behind this document is Elsevier's https://scopus.com research search engine that provides a tightly curated[^2] search index that includes sources outside of the academic behemoth's own journals. It also provides a solid API (Application Programmer Interface) and a classification of journals into subject areas. The actual form of Scopus queries is discussed below which should allow the questioning reader to verify and update the counts for the various packages discussed. 
 
 [^2]:https://scolar.google.com genrally yields double the counts for similar queries but no subject classification or API to code against. The increased counts are likely due to inclusion of non-peer reviewed sites like https://arxiv.org
-
-<br>
 
 # High level prevalence of Deep Learning vs Bayesian Modeling
 
@@ -355,17 +395,19 @@ The above queries can be run with the advance search option at https://scopus.co
 
 As often happens conducting a closer look reveals subtleties. Deep learning dominates the computer science part of science and obviously it dominates in the commercial sector which this article does not address. However the remaining parts of science show a more balanced distribution across the approaches. This makes sense since the approaches are very different and serve different goals. 
 
+<!--R1:--> This paper also demonstrates that deep learning is not the default tool when it is time for some reasoning in the scientific enterprise. If you are doing immunology/microbiology then Bayesian methods dominate. Environmental science, economics are a coin flip. While the choice of machine reasoning techniques should be entirely determined by the problem being addressed, researchers use what is popular and being talked about. Perhaps this paper gets Bayesian methods considered a bit more. <!--:R1-->
+
 As a Bayesian advocate I'd like to leave the funding agencies with the observation that Bayesian software carries roughly one third of the research load by research citation count (3925/(3925+8884)) without the backing of Fortune 500 companies like Facebook and Google. Just recently I learned of a funding denial because the funders didn't believe that Bayesian software could have the impact that was being claimed--that opinion could well be self fulfilling in the future but as of now it is not justified. 
 
 # Access to source/scripts and acknowledgements
 
-Supporting technology for this document includes the R language (@Rcite), the 'tidyverse' group of packages (@tidyverse) that give data and visualization tools and this Rmarkdown document (@rmarkdown) rendered with 'bookdown' (@bookdown) developed using the Rstudio (@rstudio) IDE (Integrated Development Environment). Supporting package include 'kable-extra' (@kable-extra), a table formatter, the 'scales' (@scales) package for converting to percentages, 'ggrepel' (@ggrepel) for labeling line graphs with dynamically shifting labels, 'jsonlite' (@jsonlite) for JSON data parsing, 'httr' (@httr) for GET requests, 'stringr' (@stringr) for regular expression matching and 'redux' (@redux) for access to the Redis server (@redis) which I highly recomend using as a caching layer for this sort of project. 
+Supporting technology for this document includes the R language (@Rcite), the 'tidyverse' group of packages (@tidyverse) that give data and visualization tools and this Rmarkdown document (@rmarkdown) rendered with 'bookdown' (@bookdown) developed using the Rstudio (@rstudio) IDE (Integrated Development Environment). Supporting package include 'kable-extra' (@kable-extra), a table formatter, the 'scales' (@scales) package for converting to percentages, 'ggrepel' (@ggrepel) for labeling line graphs with dynamically shifting labels, 'jsonlite' (@jsonlite) for JSON data parsing, 'httr' (@httr) for GET requests, 'stringr' (@stringr) for regular expression matching and 'redux' (@redux) for access to the Redis server (@redis) which I highly recommend using as a caching layer for this sort of project. 
 
 I'd like to thank Andrew Gelman and the Laplace lab at Columbia University for support. 
 
-Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary.
+Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary. <!--R5-->: I'd also like to thank anonymous reviewers who substantially improved the exposition. <!--:R5-->
 
-I intend this to be an evolving document with periodic updates at it's github repo at https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html. Note that github pages changes urls around in odd ways for the rendered view of hte html page. All source code is viewable in the .Rmd document.
+I intend this to be an evolving document with periodic updates at it's github repo at https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html. Note that github pages changes urls around in odd ways for the rendered view of the html page. All source code is viewable in the .Rmd document.
 
 I can be reached at breckbaldwin@gmail.com or via the github issues on the repository. 
 
