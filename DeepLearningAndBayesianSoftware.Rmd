@@ -1,9 +1,10 @@
 ---
 title: "Deep Learning does not Replace Bayesian Modeling"
 subtitle: "Comparing research use via citation counting"
-author: "Breck Baldwin"
+author: "Breck Baldwin, Columbia University"
 email: "breckbaldwin@gmail.com"
-date: "11/01/2021"
+affiliation: Columbia Univeristy
+
 output:
  bookdown::html_document2:
    includes:
@@ -21,6 +22,23 @@ knitr::opts_chunk$set(
 	comment = NA
 )
 ```
+
+
+<!--
+
+    A short informative title containing the major key words. The title should not contain abbreviations (see Wiley's best practice SEO tips);
+    A short running title of less than 40 characters;
+    The full names of the authors;
+    The author's institutional affiliations where the work was conducted, with a footnote for the author’s present address if different from where the work was conducted;
+    Acknowledgements;
+    Abstract and keywords;
+    Main text;
+    References;
+    Tables (each table complete with title and footnotes);
+    Figure legends;
+    Appendices (if relevant).
+-->
+
 
 <!--**Abstract revised: Note this is not in the paper but a separate attachment** 
 
@@ -63,11 +81,11 @@ But no. Another reviewer comment contains the key insight: they said it was no s
 
 Deep learning clearly is used in mechanistic models but typically as a sensor or classifier, e.g., classify x-ray images for evidence of COVID pneumonia in an epidemiological study. That study itself will likely be a state-based model where transition rates are explicitly estimated statistically and are human interpretable. 
 
-Another case are hybrid models where a deep learning component replaces some or all of the likelihood of a Bayesian model. While the overall model may be interpretable, the individual deep learning components remain black boxes. Interpretability for the overall model comes from have well understood properties of the deep learning components, e.g., how they were trained etc. For example Maggie Lieu's presentation at StanCon that used a deep learning component to substitute for a numerically unstable halo mass function (@lieuAstro).
+Another case includes hybrid models where a deep learning component replaces some or all of the likelihood of a Bayesian model. While the overall model may be interpretable, the individual deep learning components remain black boxes. Interpretability for the overall model comes via having well understood properties for the deep learning components, e.g., how they were trained etc. or other methods of characterizing their role. For example Maggie Lieu's presentation at StanCon used a deep learning component to substitute for a numerically unstable halo mass function (@lieuAstro).
 
 Also Bayesian models can be utterly opaque if not authored with an eye to understandability, but the option for understandability exists and is generally the expectation. Deep learning systems cannot match this because a big portion of 'authoring' (hyper parameter setting) in those frameworks are beyond human understanding.
 
-In the end I believe model interpretability cleanly differentiates the the deep learners and Bayesian modelers[^3], at least in practice. 
+In the end I believe model interpretability cleanly differentiates the deep learners and Bayesian modelers[^3], at least in practice. 
 
 [^3]:However, in a year this article may be much more difficult to write since deep learning packages have adopted HMC implementations. But I'd suggest that is more of a grafting of another approach to their code base rather than natural growth of deep learning techniques into the PyMC3/Stan space. 
 
@@ -86,7 +104,7 @@ The key resource behind this document is Elsevier's https://scopus.com research 
 
 # High level prevalence of Deep Learning vs Bayesian Modeling
 
-In the process of grant writing I create metrics to help justify projects, lately in partnership with PyMC and ArviZ through the scientific fiscal sponsor NumFOCUS of which Stan is a member as well. Since Bayesian modeling seems always in the shadow of deep learning I started tracking deep learning software packages as well for comparison. Below we see the relative citations of the top deep learning packages TensorFlow, PyTorch and the support package Keras to the Bayesian packages PyMC3, Stan with support/derivative packages RStan, RStanArm, PyStan and brms. 
+In the process of grant writing I create metrics to help justify projects, lately in partnership with PyMC and ArviZ through the scientific fiscal sponsor NumFOCUS of which Stan is a member as well. Since Bayesian modeling seems always in the shadow of deep learning I started tracking deep learning software packages as well for comparison. Below we see the relative citations of the top deep learning packages TensorFlow, PyTorch and the support package Keras to the Bayesian packages PyMC3, Stan with supporting/derivative packages RStan, RStanArm, PyStan and brms. 
 
 ```{r Access Scopus, include=FALSE}
 rm(list = rm()) #clean out any state from previous runs
@@ -251,7 +269,7 @@ plot2 <-
   geom_label_repel(aes(label = label),
                    na.rm = TRUE) +
   scale_color_discrete(guide = FALSE) +
-  labs(y = "year count for research articles matching topic",
+  labs(y = "Year count for research articles matching topic",
   caption = "Fig 1: Relative counts with and without computer science journals") +
    theme(plot.caption=element_text(size=12, hjust=0, margin=margin(15,0,0,0)))
 
@@ -259,6 +277,7 @@ plot2 <-
    log_plot = plot2 + 
      scale_y_continuous(breaks=c(1, 10, 100, 1000, 10000, 100000, 1e+06, 1e+07, 1e+08), 
                      trans = scales::log_trans())
+ggsave('fig1.png', plot=plot2)
 print(plot2)
 ```
 
@@ -374,7 +393,7 @@ I leave the tea leaf interpretation to others but I'll make the observation that
 
 # Details of the queries
 
-Below are the queries used to identify the packages. Direct citation linking does not work well with these packages since many of them had no journal publication to cite in a referring article. As a result a string search was used to identify the citations in the reference section which was determined by Scopus.com's document parser. I would estimate a 5% false positive rate based based on informal examination of return sets. 
+Below are the queries used to identify the packages. Direct citation linking does not work well with these packages since many of them had no journal publication to cite in a referring article. Consequently a string search was used to identify the citations in the reference section which was determined by Scopus.com's document parser. I would estimate a 5% false positive rate based based on informal examination of return sets. 
 
 For an example of how the queries were developed, the stand alone query 'rstan' had the addition of rejecting articles that mentioned 'mit' because there was a common reference to 'http://wwwmath.mit.edu/~rstan/ec/' that existed prior to 2012 when Stan was released. The name 'Stan' presented obvious difficulties, see https://statmodeling.stat.columbia.edu/2019/04/29/we-shouldntve-called-it-stan-i-shouldve-listened-to-bob-and-hadley/. The query shown achieved desired count drop off at 2012 with reasonable precision and each of the 'OR' terms contributed to coverage significantly. How the word 'mc-stan.org' was tokenized is unknown but there were no results before 2013 for the solo query. 
 
@@ -389,7 +408,7 @@ kable(pkg_query_m_display, booktabs = TRUE) %>% kable_styling(font_size = 12)
 
 PyMC presented some challenges in that the string PyMC was referenced in early publications but also is ambiguous with chemical terms, so like Stan, author names were included to restrict search as was the case with 'brms'. These queries were initially developed to search entire documents rather than the current restriction to the references section of papers. I would expect the false positive rate to be even lower. 
 
-The above queries can be run with the advance search option at https://scopus.com and are generated from the API queries actually used where '+' was replaced with ' ' above. An account is required which is included for many education institutions. 
+The above queries can be run with the advance search option at https://scopus.com and are generated from the API queries actually used where '+' is replaced with ' ' above. An account is required which is included for many education institutions. 
 
 # Conclusions
 
@@ -399,15 +418,18 @@ As often happens conducting a closer look reveals subtleties. Deep learning domi
 
 As a Bayesian advocate I'd like to leave the funding agencies with the observation that Bayesian software carries roughly one third of the research load by research citation count (3925/(3925+8884)) without the backing of Fortune 500 companies like Facebook and Google. Just recently I learned of a funding denial because the funders didn't believe that Bayesian software could have the impact that was being claimed--that opinion could well be self fulfilling in the future but as of now it is not justified. 
 
-# Access to source/scripts and acknowledgements
+# Access to source/scripts
 
 Supporting technology for this document includes the R language (@Rcite), the 'tidyverse' group of packages (@tidyverse) that give data and visualization tools and this Rmarkdown document (@rmarkdown) rendered with 'bookdown' (@bookdown) developed using the Rstudio (@rstudio) IDE (Integrated Development Environment). Supporting package include 'kable-extra' (@kable-extra), a table formatter, the 'scales' (@scales) package for converting to percentages, 'ggrepel' (@ggrepel) for labeling line graphs with dynamically shifting labels, 'jsonlite' (@jsonlite) for JSON data parsing, 'httr' (@httr) for GET requests, 'stringr' (@stringr) for regular expression matching and 'redux' (@redux) for access to the Redis server (@redis) which I highly recommend using as a caching layer for this sort of project. 
 
-I'd like to thank Andrew Gelman and the Laplace lab at Columbia University for support. 
-
-Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary. <!--R5-->: I'd also like to thank anonymous reviewers who substantially improved the exposition. <!--:R5-->
 
 I intend this to be an evolving document with periodic updates at it's github repo at https://github.com/breckbaldwin/ScientificSoftwareImpactMetrics where it lives as `DeepLearningAndBayesianSoftware.Rmd`, is rendered as `DeepLearningAndBayesianSoftware.html` and is viewable as https://breckbaldwin.github.io/ScientificSoftwareImpactMetrics/DeepLearningAndBayesianSoftware.html. Note that github pages changes urls around in odd ways for the rendered view of the html page. All source code is viewable in the .Rmd document.
+
+# Acknowledgements 
+
+I'd like to thank Andrew Gelman and the Laplace lab at Columbia University. The research was supported by internal Columbia funds. 
+
+Oriol Abril Pla brought up emcee as a popular Bayesian system worth consideration which was a big oversight on my part as well as providing insightful commentary. <!--R5-->: I'd also like to thank anonymous reviewers who substantially improved the exposition. <!--:R5-->
 
 I can be reached at breckbaldwin@gmail.com or via the github issues on the repository. 
 
