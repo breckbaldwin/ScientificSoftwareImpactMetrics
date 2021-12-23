@@ -127,8 +127,9 @@ INSTITUTION_TOKEN <- credentials$INSTITUTION_TOKEN
 
 BASE_URL = 'https://api.elsevier.com/content/search/scopus'
 
-USE_CACHE = TRUE #will have to setup a redis server, strongly recommend doing this
+USE_CACHE = FALSE #will have to setup a redis server, strongly recommend doing this
 REPORT_PROGRESS = FALSE
+RUN_QUERY <- FALSE #if TRUE will either hit scopus or cache, if false will pull from disk
 
 if (USE_CACHE) {
   library(redux)
@@ -209,7 +210,7 @@ queryBayVsDeepM[2,] <- c('Deep Learning',
 
 ```
 
-```{r DL vs Bayes Graph, echo=FALSE, message=FALSE, warning=FALSE}
+```{r DL vs Bayes Data Creation, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggrepel)
 year_start <- 2012
 year_end <- 2020
@@ -217,36 +218,44 @@ years <- year_start:year_end
 df <- data.frame(years)
 
 years <- year_start:year_end
-scopus.df <- data.frame(years)
-#queryM = pkg_query_m
-queryM = queryBayVsDeepM
-for (i in 1:nrow(queryM)) {
-  package_name = queryM[i, 1]
-  query = queryM[i, 2]
-  for (suffix in c('','_no_comp_sci')) {
-#  for (suffix in c('')) {
-    year_counts = c()
-    for (year in year_start:year_end) {
-      url <- paste(BASE_URL, '?query=','REF(', query,')',
-                   "+AND+PUBYEAR+=+", year,
-                   sep = '')
-      if (suffix == '_no_comp_sci') {
-        url = paste(url, '+AND+NOT+SUBJAREA(COMP)', sep = '')
+
+if (RUN_QUERY) {
+  scopus.df <- data.frame(years)
+  #queryM = pkg_query_m
+  queryM = queryBayVsDeepM
+  for (i in 1:nrow(queryM)) {
+    package_name = queryM[i, 1]
+    query = queryM[i, 2]
+    for (suffix in c('','_no_comp_sci')) {
+  #  for (suffix in c('')) {
+      year_counts = c()
+      for (year in year_start:year_end) {
+        url <- paste(BASE_URL, '?query=','REF(', query,')',
+                     "+AND+PUBYEAR+=+", year,
+                     sep = '')
+        if (suffix == '_no_comp_sci') {
+          url = paste(url, '+AND+NOT+SUBJAREA(COMP)', sep = '')
+        }
+        result <- get_results(url)
+        json_txt <- rawToChar(as.raw(strtoi(result$content, 16L)))
+        data <- jsonlite::fromJSON(json_txt)
+        year_counts = c(
+          year_counts,
+          as.numeric(data$`search-results`$`opensearch:totalResults`))
       }
-      result <- get_results(url)
-      json_txt <- rawToChar(as.raw(strtoi(result$content, 16L)))
-      data <- jsonlite::fromJSON(json_txt)
-      year_counts = c(
-        year_counts,
-        as.numeric(data$`search-results`$`opensearch:totalResults`))
+      scopus.df[paste(
+        package_name,
+        suffix,
+        sep = '')] <- year_counts
     }
-    scopus.df[paste(
-      package_name,
-      suffix,
-      sep = '')] <- year_counts
   }
+  
+  write.table(scopus.df,"scopus.csv")
 }
 
+
+scopus.df <- NA
+scopus.df <- read.table("scopus.csv")
 column_names <- colnames(scopus.df)
 col_sums <- colSums(scopus.df)
 df_long <- gather(scopus.df, topic, yr_count,
@@ -285,7 +294,7 @@ Reading from top of Fig 1, assuming raw research citations counts matter, Bayesi
 
 # Subject Category Breakdowns
 
-So what is going on here? The next question is what does the the distribution look like for non-computer science subject areas?  Below is a table of subject counts for packages starting in 2006 when PyMC was first released to 2021 with relative percentages listed:
+So what is going on here? The next question is what does the the distribution look like for non-computer science subject areas?  Below in Table 1 are subject category counts for packages starting in 2006 when PyMC was first released to 2021 with relative percentages listed:
 
 ```{r Table 1, echo=FALSE, message=FALSE, warning=FALSE}
 library(scales)
@@ -371,14 +380,19 @@ getAllSubjectCategories <- function (queryM) {
   return(accumDf)
 }
 
-bayesVdeepLearnDf <- getAllSubjectCategories(queryBayVsDeepM)
-displayBayesVdeepLearnDf <- makeDisplayTable(bayesVdeepLearnDf)
+if (RUN_QUERY) {
+  bayesVdeepLearnDf <- getAllSubjectCategories(queryBayVsDeepM)
+  displayBayesVdeepLearnDf <- makeDisplayTable(bayesVdeepLearnDf)
 
-detailDf  <- getAllSubjectCategories(pkg_query_m)
-displayDetailDf <- makeDisplayTable(detailDf)
+  detailDf  <- getAllSubjectCategories(pkg_query_m)
+  displayDetailDf <- makeDisplayTable(detailDf)
 
-allDataDf <- cbind(displayBayesVdeepLearnDf,displayDetailDf)
-allDataDf <- allDataDf[,c(1,2,3,11,6,7,10,9,4,8,5,12,13)]
+  allDataDf <- cbind(displayBayesVdeepLearnDf,displayDetailDf)
+  allDataDf <- allDataDf[,c(1,2,3,11,6,7,10,9,4,8,5,12,13)]
+  write.table(allDataDf,"allDataDf.csv")
+}
+
+allDataDf <- read.table("allDataDf.csv")
 displayedColNames <- colnames(allDataDf)
 colnames(allDataDf) <- c(displayedColNames[1:12],'detail totals')
 kable(allDataDf, booktabs = TRUE) %>% kable_styling(font_size = 10)
